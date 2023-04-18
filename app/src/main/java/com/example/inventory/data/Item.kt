@@ -17,12 +17,15 @@
 package com.example.inventory.data
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
  * Entity data class represents a single row in the database.
  */
-@Entity(tableName = "items")
+@Entity(
+    tableName = "items",
+    indices = [Index("name", unique = true)])
 data class Item(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,

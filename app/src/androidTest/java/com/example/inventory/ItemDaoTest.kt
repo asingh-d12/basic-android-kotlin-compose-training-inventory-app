@@ -31,6 +31,7 @@ class ItemDaoTest {
 
     @Before
     fun createDb() {
+        println("In Before!!")
         val context: Context = ApplicationProvider.getApplicationContext()
         // Using an in-memory database because the information stored here disappears when the
         // process is killed
@@ -61,6 +62,41 @@ class ItemDaoTest {
         addTwoItemsToDB()
         val allItems = itemDao.getAllItems().first()
         Assert.assertEquals(listOf(item1, item2), allItems)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @Throws(Exception::class)
+    fun daoDeleteItems_deleteAllItemsFromDB() = runTest {
+        addTwoItemsToDB()
+        itemDao.delete(item1)
+        itemDao.delete(item2)
+        val allItems = itemDao.getAllItems().first()
+        Assert.assertTrue(allItems.isEmpty())
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @Throws(Exception::class)
+    fun daoUpdateItems_updateItemsInDB() = runTest {
+        addTwoItemsToDB()
+        val updateItem1 = item1.copy(price = 15.0, quantity = 25)
+        val updateItem2 = item2.copy(price = 5.0, quantity = 50)
+        itemDao.update(updateItem1)
+        itemDao.update(updateItem2)
+        val allItems = itemDao.getAllItems().first()
+        Assert.assertNotEquals(listOf(item1, item2), allItems)
+        Assert.assertEquals(listOf(updateItem1, updateItem2), allItems)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @Throws(Exception::class)
+    fun daoGetItem_returnsItemInDB() = runTest {
+        addTwoItemsToDB()
+
+        val item = itemDao.getItem(item1.id).first()
+        Assert.assertEquals(item1, item)
     }
 
     @After
